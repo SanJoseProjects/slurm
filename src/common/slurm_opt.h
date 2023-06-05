@@ -148,6 +148,7 @@ enum {
 	LONG_OPT_NTASKSPERNODE,
 	LONG_OPT_NTASKSPERSOCKET,
 	LONG_OPT_NTASKSPERTRES,
+    LONG_OPT_NTASKS_ALLOC_ALGORITHM,
 	LONG_OPT_OPEN_MODE,
 	LONG_OPT_OVERLAP,
 	LONG_OPT_HET_GROUP,
@@ -325,6 +326,7 @@ typedef struct {
 	int ntasks_per_socket;		/* --ntasks-per-socket=n	*/
 	int ntasks_per_core;		/* --ntasks-per-core=n		*/
 	int ntasks_per_tres;		/* --ntasks-per-gpu=n	*/
+    int ntasks_alloc_algorithm; /* --ntasks_alloc_algorithm=n */
 	char *hint;			/* --hint or SLURM_HINT envvar	*/
 	mem_bind_type_t mem_bind_type;	/* --mem-bind=		*/
 	char *mem_bind;			/* binding map for map/mask_mem	*/

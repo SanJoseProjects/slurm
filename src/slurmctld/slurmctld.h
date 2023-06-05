@@ -577,6 +577,7 @@ typedef struct {
 	uint16_t mem_bind_type;		/* see mem_bind_type_t */
 	uint32_t min_cpus;		/* minimum number of cpus */
 	uint32_t orig_min_cpus;		/* requested value of min_cpus */
+    uint32_t tasks_alloc_algorithm; /* number of all tasks to alloc with algorithm */
 	int min_gres_cpu;		/* Minimum CPU count per node required
 					 * to satisfy GRES requirements,
 					 * not saved/restored, but rebuilt */

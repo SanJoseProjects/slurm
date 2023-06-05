@@ -1624,6 +1624,7 @@ typedef struct job_descriptor {	/* For submit, allocate, and update requests */
 				 * NICE_OFFSET == no change */
 	uint32_t num_tasks;	/* number of tasks to be started,
 				 * for batch only */
+    uint32_t num_tasks_alloc_algorithm;
 	uint8_t open_mode;	/* out/err open mode truncate or append,
 				 * see OPEN_MODE_* */
 	char *origin_cluster;	/* cluster name that initiated the job. */
@@ -1823,6 +1824,7 @@ typedef struct job_info {
 	uint32_t num_cpus;	/* minimum number of cpus required by job */
 	uint32_t num_nodes;	/* minimum number of nodes required by job */
 	uint32_t num_tasks;	/* requested task count */
+    uint32_t num_tasks_alloc_algorithm;
 	char *partition;	/* name of assigned partition */
 	char *prefer;		/* comma separated list of soft features */
 	uint64_t pn_min_memory; /* minimum real memory per node, default=0 */
@@ -1946,6 +1948,7 @@ typedef struct {
 	uint32_t *cpu_count_reps; /* how many nodes have same cpu count */
 	uint32_t num_hosts; /* number of hosts we have */
 	uint32_t num_tasks; /* number of tasks to distribute across these cpus*/
+    uint32_t num_tasks_alloc_algorithm;
 	uint16_t *cpus_per_task; /* number of cpus per task */
 	uint32_t *cpus_task_reps; /* how many nodes have same per task count */
 	uint32_t task_dist; /* type of distribution we are using */
@@ -2176,6 +2179,7 @@ typedef struct {
 				 * start_range_2, .., -1  */
 	uint32_t num_cpus;	/* how many cpus are being used by step */
 	uint32_t num_tasks;	/* number of tasks */
+    uint32_t num_tasks_alloc_algorithm;
 	char *partition;	/* name of assigned partition */
 	char *resv_ports;	/* ports allocated for MPI */
 	time_t run_time;	/* net run time (factor out time suspended) */

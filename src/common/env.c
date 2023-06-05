@@ -319,6 +319,13 @@ int setup_env(env_t *env, bool preserve_env)
 		}
 	}
 
+    if (env->ntasks_alloc_algorithm) {
+        if (setenvf(&env->env, "SLURM_NTASKS_ALLOC_ALGORITHM", "%d", env->ntasks_alloc_algorithm)) {
+            error("Unable to set SLURM_NTASKS_ALLOC_ALGORITHM environment variable");
+            rc = SLURM_ERROR;
+        }
+    }
+
 	if (env->cpus_per_task &&
 	    setenvf(&env->env, "SLURM_CPUS_PER_TASK", "%d",
 		    env->cpus_per_task) ) {
@@ -977,6 +984,7 @@ extern int env_array_for_job(char ***dest,
 	memset(&step_layout_req, 0, sizeof(slurm_step_layout_req_t));
 	step_layout_req.num_tasks = desc->num_tasks;
 	step_layout_req.num_hosts = alloc->node_cnt;
+    step_layout_req.num_tasks_alloc_algorithm = desc->num_tasks_alloc_algorithm;
 	cpus_per_task_array[0] = desc->cpus_per_task;
 	cpus_task_reps[0] = alloc->node_cnt;
 
@@ -1283,6 +1291,10 @@ env_array_for_batch_job(char ***dest, const batch_job_launch_msg_t *batch,
 						      cpus_per_task) *
 						     batch->cpu_count_reps[i];
 	}
+    if (step_layout_req.num_tasks_alloc_algorithm) {
+        env_array_overwrite_fmt(dest, "SLURM_NTASKS_ALLOC_ALGORITHM", "%u",
+                                step_layout_req.num_tasks_alloc_algorithm);
+    }
 
 	if ((step_layout_req.node_list =
 	     getenvp(*dest, "SLURM_ARBITRARY_NODELIST"))) {

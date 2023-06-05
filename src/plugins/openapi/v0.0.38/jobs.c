@@ -225,6 +225,7 @@ const params_t job_params[] = {
 	{ "tasks_per_socket", LONG_OPT_NTASKSPERSOCKET },
 	{ "ntasks_per_socket", LONG_OPT_NTASKSPERSOCKET },
 	{ "ntasks_per_tres", LONG_OPT_NTASKSPERTRES },
+    { "ntasks_alloc_algorithm", LONG_OPT_NTASKS_ALLOC_ALGORITHM },
 	{ "temporary_disk_per_node", LONG_OPT_TMP },
 	{ "test_only", LONG_OPT_TEST_ONLY },
 	{ "thread_specification", LONG_OPT_THREAD_SPEC },

@@ -2220,6 +2220,7 @@ static void _pack_job_step_create_request_msg(
 		pack32(msg->cpu_freq_max, buffer);
 		pack32(msg->cpu_freq_gov, buffer);
 		pack32(msg->num_tasks, buffer);
+        pack32(msg->num_tasks_alloc_algorithm, buffer);
 		pack64(msg->pn_min_memory, buffer);
 		pack32(msg->time_limit, buffer);
 		pack16(msg->threads_per_core, buffer);
@@ -2264,6 +2265,7 @@ static void _pack_job_step_create_request_msg(
 		pack32(msg->cpu_freq_max, buffer);
 		pack32(msg->cpu_freq_gov, buffer);
 		pack32(msg->num_tasks, buffer);
+        pack32(msg->num_tasks_alloc_algorithm, buffer);
 		pack64(msg->pn_min_memory, buffer);
 		pack32(msg->time_limit, buffer);
 		pack16(msg->threads_per_core, buffer);
@@ -2325,6 +2327,7 @@ static int _unpack_job_step_create_request_msg(
 		safe_unpack32(&tmp_ptr->cpu_freq_max, buffer);
 		safe_unpack32(&tmp_ptr->cpu_freq_gov, buffer);
 		safe_unpack32(&tmp_ptr->num_tasks, buffer);
+        safe_unpack32(&tmp_ptr->num_tasks_alloc_algorithm, buffer);
 		safe_unpack64(&tmp_ptr->pn_min_memory, buffer);
 		safe_unpack32(&tmp_ptr->time_limit, buffer);
 		safe_unpack16(&tmp_ptr->threads_per_core, buffer);
@@ -2372,6 +2375,7 @@ static int _unpack_job_step_create_request_msg(
 		safe_unpack32(&tmp_ptr->cpu_freq_max, buffer);
 		safe_unpack32(&tmp_ptr->cpu_freq_gov, buffer);
 		safe_unpack32(&tmp_ptr->num_tasks, buffer);
+        safe_unpack32(&tmp_ptr->num_tasks_alloc_algorithm, buffer);
 		safe_unpack64(&tmp_ptr->pn_min_memory, buffer);
 		safe_unpack32(&tmp_ptr->time_limit, buffer);
 		safe_unpack16(&tmp_ptr->threads_per_core, buffer);
@@ -2964,6 +2968,7 @@ _unpack_job_step_info_members(job_step_info_t * step, buf_t *buffer,
 		safe_unpack32(&step->cpu_freq_max, buffer);
 		safe_unpack32(&step->cpu_freq_gov, buffer);
 		safe_unpack32(&step->num_tasks, buffer);
+        safe_unpack32(&step->num_tasks_alloc_algorithm, buffer);
 		safe_unpack32(&step->task_dist, buffer);
 		safe_unpack32(&step->time_limit, buffer);
 		safe_unpack32(&step->state, buffer);
@@ -5124,6 +5129,7 @@ static void _pack_job_desc_msg(job_desc_msg_t *job_desc_ptr, buf_t *buffer,
 		pack8(job_desc_ptr->overcommit, buffer);
 		packstr(job_desc_ptr->acctg_freq, buffer);
 		pack32(job_desc_ptr->num_tasks, buffer);
+        pack32(job_desc_ptr->num_tasks_alloc_algorithm, buffer);
 
 		packstr(job_desc_ptr->req_context, buffer);
 		packstr(job_desc_ptr->req_nodes, buffer);
@@ -5259,6 +5265,7 @@ static void _pack_job_desc_msg(job_desc_msg_t *job_desc_ptr, buf_t *buffer,
 		pack8(job_desc_ptr->overcommit,  buffer);
 		packstr(job_desc_ptr->acctg_freq, buffer);
 		pack32(job_desc_ptr->num_tasks,  buffer);
+        pack32(job_desc_ptr->num_tasks_alloc_algorithm, buffer);
 
 		packstr(job_desc_ptr->req_context, buffer);
 		packstr(job_desc_ptr->req_nodes, buffer);
@@ -5419,6 +5426,7 @@ _unpack_job_desc_msg(job_desc_msg_t ** job_desc_buffer_ptr, buf_t *buffer,
 		safe_unpack8(&job_desc_ptr->overcommit, buffer);
 		safe_unpackstr(&job_desc_ptr->acctg_freq, buffer);
 		safe_unpack32(&job_desc_ptr->num_tasks, buffer);
+        safe_unpack32(&job_desc_ptr->num_tasks_alloc_algorithm, buffer);
 
 		safe_unpackstr(&job_desc_ptr->req_context, buffer);
 		safe_unpackstr(&job_desc_ptr->req_nodes, buffer);
@@ -5583,6 +5591,7 @@ _unpack_job_desc_msg(job_desc_msg_t ** job_desc_buffer_ptr, buf_t *buffer,
 		safe_unpack8(&job_desc_ptr->overcommit,  buffer);
 		safe_unpackstr(&job_desc_ptr->acctg_freq, buffer);
 		safe_unpack32(&job_desc_ptr->num_tasks,  buffer);
+        safe_unpack32(&job_desc_ptr->num_tasks_alloc_algorithm, buffer);
 
 		safe_unpackstr(&job_desc_ptr->req_context, buffer);
 		safe_unpackstr(&job_desc_ptr->req_nodes, buffer);

@@ -50,6 +50,8 @@
 
 #include "src/common/macros.h" /* true and false */
 #include "src/common/env.h"
+#include "src/common/node_conf.h"
+#include "src/common/bitstring.h"
 #include "src/common/slurmdb_defs.h"
 #include "src/common/slurm_opt.h"
 
@@ -73,6 +75,7 @@ typedef struct sbatch_env_opts {
 	uint32_t ntasks_per_socket;
 	uint32_t ntasks_per_tres;
 	uint32_t plane_size;
+    uint32_t ntasks_alloc_algorithm;
 	uint16_t threads_per_core;
 } sbatch_env_t;
 

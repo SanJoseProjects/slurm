@@ -79,6 +79,7 @@ void slurm_init_job_desc_msg(job_desc_msg_t * job_desc_msg)
 	job_desc_msg->ntasks_per_node	= NO_VAL16;
 	job_desc_msg->ntasks_per_socket	= NO_VAL16;
 	job_desc_msg->num_tasks		= NO_VAL;
+    job_desc_msg->num_tasks_alloc_algorithm	= NO_VAL;
 	job_desc_msg->overcommit	= NO_VAL8;
 	job_desc_msg->plane_size	= NO_VAL16;
 	job_desc_msg->pn_min_cpus	= NO_VAL16;

@@ -3314,6 +3314,20 @@ static slurm_cli_opt_t slurm_opt_ntasks = {
 	.reset_func = arg_reset_ntasks,
 	.reset_each_pass = true,
 };
+COMMON_INT_OPTION_SET(ntasks_alloc_algorithm, "--ntasks-alloc-algorithm");
+COMMON_INT_OPTION_SET_DATA(ntasks_alloc_algorithm);
+COMMON_INT_OPTION_GET(ntasks_alloc_algorithm);
+COMMON_OPTION_RESET(ntasks_alloc_algorithm, NO_VAL);
+static slurm_cli_opt_t slurm_opt_ntasks_alloc_algorithm = {
+        .name = "ntasks-alloc-algorithm",
+        .has_arg = required_argument,
+        .val = LONG_OPT_NTASKS_ALLOC_ALGORITHM,
+        .set_func = arg_set_ntasks_alloc_algorithm,
+        .set_func_data = arg_set_data_ntasks_alloc_algorithm,
+        .get_func = arg_get_ntasks_alloc_algorithm,
+        .reset_func = arg_reset_ntasks_alloc_algorithm,
+        .reset_each_pass = true,
+};
 
 COMMON_INT_OPTION_SET(ntasks_per_core, "--ntasks-per-core");
 COMMON_INT_OPTION_SET_DATA(ntasks_per_core);
@@ -5283,6 +5297,7 @@ static const slurm_cli_opt_t *common_options[] = {
 	&slurm_opt_nodelist,
 	&slurm_opt_nodes,
 	&slurm_opt_ntasks,
+    &slurm_opt_ntasks_alloc_algorithm,
 	&slurm_opt_ntasks_per_core,
 	&slurm_opt_ntasks_per_gpu,
 	&slurm_opt_ntasks_per_node,
@@ -5497,7 +5512,6 @@ int slurm_process_option(slurm_opt_t *opt, int optval, const char *arg,
 	for (i = 0; common_options[i]; i++) {
 		if (common_options[i]->val != optval)
 			continue;
-
 		/* Check that this is a valid match. */
 		if (!common_options[i]->set_func &&
 		    !(opt->salloc_opt && common_options[i]->set_func_salloc) &&
@@ -5523,7 +5537,6 @@ int slurm_process_option(slurm_opt_t *opt, int optval, const char *arg,
 		/* early pass, assume it is a SPANK option and skip */
 		return SLURM_SUCCESS;
 	}
-
 	/*
 	 * Special handling for the early pass in sbatch.
 	 *
@@ -5588,7 +5601,6 @@ int slurm_process_option(slurm_opt_t *opt, int optval, const char *arg,
 		opt->state[i].set_by_env = false;
 		return SLURM_SUCCESS;
 	}
-
 	if (common_options[i]->set_func) {
 		if (!(common_options[i]->set_func)(opt, setarg)) {
 			opt->state[i].set = true;
@@ -6307,6 +6319,10 @@ extern job_desc_msg_t *slurm_opt_create_job_desc(slurm_opt_t *opt_local,
 		job_desc->bitflags |= JOB_NTASKS_SET;
 		job_desc->num_tasks = opt_local->ntasks;
 	}
+
+    if (opt_local->ntasks_alloc_algorithm != NO_VAL) {
+        job_desc->num_tasks_alloc_algorithm = opt_local->ntasks_alloc_algorithm;
+    }
 
 	if (opt_local->open_mode)
 		job_desc->open_mode = opt_local->open_mode;

@@ -654,7 +654,10 @@ static void _setup_one_job_env(slurm_opt_t *opt_local, srun_job_t *job,
 		env->jobid = job->het_job_id;
 	else
 		env->jobid = job->step_id.job_id;
-	env->stepid = job->step_id.step_id;
+    if (opt_local->ntasks_alloc_algorithm != 0)
+        env->ntasks_alloc_algorithm = opt_local->ntasks_alloc_algorithm;
+
+    env->stepid = job->step_id.step_id;
 	env->account = job->account;
 	env->qos = job->qos;
 	env->resv_name = job->resv_name;

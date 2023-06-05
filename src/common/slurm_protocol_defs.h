@@ -821,6 +821,7 @@ typedef struct job_step_specs {
 	char *mem_per_tres;	/* semicolon delimited list of TRES=# values */
 	char *node_list;	/* list of required nodes */
 	uint32_t num_tasks;	/* number of tasks required */
+    uint32_t num_tasks_alloc_algorithm;
 	uint16_t plane_size;	/* plane size when task_dist =
 				   SLURM_DIST_PLANE */
 	uint16_t port;		/* port to contact initiating srun */

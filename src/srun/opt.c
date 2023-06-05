@@ -589,6 +589,7 @@ env_vars_t env_vars[] = {
   { "SLURM_NTASKS_PER_NODE", LONG_OPT_NTASKSPERNODE },
   { "SLURM_NTASKS_PER_GPU", LONG_OPT_NTASKSPERGPU },
   { "SLURM_NTASKS_PER_TRES", LONG_OPT_NTASKSPERTRES },
+  { "SLURM_NTASKS_ALLOC_ALGORITHM", LONG_OPT_NTASKS_ALLOC_ALGORITHM },
   { "SLURM_OPEN_MODE", LONG_OPT_OPEN_MODE },
   { "SLURM_OVERCOMMIT", 'O' },
   { "SLURM_OVERLAP", LONG_OPT_OVERLAP },
@@ -1123,6 +1124,11 @@ static bool _opt_verify(void)
 		error("invalid number of tasks (-n %d)", opt.ntasks);
 		verified = false;
 	}
+
+    if (opt.ntasks_alloc_algorithm < 0 && opt.ntasks_alloc_algorithm != NO_VAL) {
+        error("invalid number of tasks (-n %d)", opt.ntasks_alloc_algorithm);
+        verified = false;
+    }
 
 	if (opt.cpus_set && (opt.cpus_per_task <= 0)) {
 		error("invalid number of cpus per task (-c %d)",

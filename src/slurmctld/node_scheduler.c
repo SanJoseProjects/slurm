@@ -2295,6 +2295,62 @@ static List _handle_exclusive_gres(job_record_t *job_ptr,
 	return post_list;
 }
 
+int *_find_factors(uint32_t number, int *factors) {
+    factors = xmalloc(number * sizeof(int));
+    for (int i = 1; i <= number; i++) {
+        if (number % i == 0)
+            factors[i]++;
+    }
+    return factors;
+}
+
+int _tasks_effective_alloc_algorithm(job_record_t *job_ptr, struct node_set *node_set_ptr) {
+    job_details_t *detail_ptr = job_ptr->details;
+    int *factors = NULL;
+    int avail_nodes_cnt = bit_set_count(avail_node_bitmap);
+
+    debug2("%s: cpus_per_node in alloc algo value is %d", __func__, node_set_ptr->cpus_per_node);
+    debug2("%s: avail_nodes_cnt in alloc algo value is %d", __func__, avail_nodes_cnt);
+    debug2("%s: avail_nodes_cnt * cpus_per_node in alloc algo value is %d",
+           __func__, avail_nodes_cnt * node_set_ptr->cpus_per_node);
+    if (avail_nodes_cnt * node_set_ptr->cpus_per_node < detail_ptr->tasks_alloc_algorithm) {
+        info("no available resources to alloc this tasks number ( -available %d, -ntasks %d )",
+              node_set_ptr->node_cnt * node_set_ptr->cpus_per_node, detail_ptr->tasks_alloc_algorithm);
+        return -1;
+    }
+
+    detail_ptr->cpus_per_task = 1;
+    if (detail_ptr->tasks_alloc_algorithm <= node_set_ptr->cpus_per_node) {
+        detail_ptr->num_tasks = detail_ptr->tasks_alloc_algorithm;
+        detail_ptr->min_cpus = detail_ptr->tasks_alloc_algorithm;
+    } else  {
+        if (detail_ptr->tasks_alloc_algorithm % 2 != 0) {
+            info("number of given tasks to alloc must be even ( -n %d )", detail_ptr->tasks_alloc_algorithm);
+            return -1;
+        }
+
+        factors = _find_factors(detail_ptr->tasks_alloc_algorithm, factors);
+        if ((detail_ptr->tasks_alloc_algorithm < 3 * node_set_ptr->cpus_per_node)) {
+            for (uint32_t i = 5; i > 0; i--) {
+                if (factors[i] != 0 && i <= avail_nodes_cnt) {
+                    detail_ptr->min_nodes = i;
+                    break;
+                }
+            }
+        } else {
+            for (uint32_t i = detail_ptr->tasks_alloc_algorithm; i > 0; i--) {
+                if (factors[i] != 0 && i <= avail_nodes_cnt) {
+                    detail_ptr->min_nodes = i;
+                    break;
+                }
+            }
+        }
+        detail_ptr->ntasks_per_node = detail_ptr->tasks_alloc_algorithm / detail_ptr->min_nodes;
+        xfree(factors);
+    }
+    return 0;
+}
+
 /*
  * select_nodes - select and allocate nodes to a specific job
  * IN job_ptr - pointer to the job record
@@ -2454,6 +2510,15 @@ extern int select_nodes(job_record_t *job_ptr, bool test_only,
 			goto cleanup;
 		}
 	}
+
+    debug2("%s: tasks alloc algorithm value equals to %d", __func__, job_ptr->details->tasks_alloc_algorithm);
+    debug2("%s: tasks alloc algorithm value equals to %d", __func__, job_ptr->details->tasks_alloc_algorithm);
+    debug2("%s: min cpus value equals to %d", __func__, job_ptr->details->num_tasks);
+    if (job_ptr->details->tasks_alloc_algorithm != 0) {
+        if(_tasks_effective_alloc_algorithm(job_ptr, node_set_ptr) != 0) {
+            return ESLURM_REQUESTED_NODE_CONFIG_UNAVAILABLE;
+        }
+    }
 
 	/* enforce both user's and partition's node limits if the qos
 	 * isn't set to override them */

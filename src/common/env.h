@@ -94,6 +94,7 @@ typedef struct env_options {
 	time_t job_end_time;    /* job's end time */
 	char *job_licenses;	/* job's licenses */
 	time_t job_start_time;  /* job's start time */
+    int ntasks_alloc_algorithm; /* --tasks_alloc_algorithm=n */
 } env_t;
 
 

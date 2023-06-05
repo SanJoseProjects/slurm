@@ -1831,6 +1831,8 @@ static int _load_job_state(buf_t *buffer, uint16_t protocol_version)
 		gres_job_state_log(gres_list_alloc, job_id);
 
 		safe_unpack16(&details, buffer);
+//        error("I'm here!!!");
+//        exit(1);
 		if ((details == DETAILS_FLAG) &&
 		    (_load_job_details(job_ptr, buffer, protocol_version))) {
 			job_ptr->job_state = JOB_FAILED;
@@ -2561,6 +2563,7 @@ static void _dump_job_details(job_details_t *detail_ptr, buf_t *buffer)
 	pack32(detail_ptr->min_nodes, buffer);
 	pack32(detail_ptr->max_nodes, buffer);
 	pack32(detail_ptr->num_tasks, buffer);
+    pack32(detail_ptr->tasks_alloc_algorithm, buffer);
 
 	packstr(detail_ptr->acctg_freq, buffer);
 	pack16(detail_ptr->contiguous, buffer);
@@ -2646,7 +2649,7 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 	uint32_t cpu_freq_min = NO_VAL;
 	uint32_t cpu_freq_max = NO_VAL;
 	uint32_t cpu_freq_gov = NO_VAL, nice = 0;
-	uint32_t num_tasks, name_len, argc = 0, env_cnt = 0, task_dist;
+	uint32_t num_tasks, name_len, argc = 0, env_cnt = 0, task_dist, num_tasks_alloc_algorithm;
 	uint16_t contiguous, core_spec = NO_VAL16;
 	uint16_t ntasks_per_node, cpus_per_task, requeue;
 	uint16_t cpu_bind_type, mem_bind_type, plane_size;
@@ -2666,6 +2669,7 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 		safe_unpack32(&min_nodes, buffer);
 		safe_unpack32(&max_nodes, buffer);
 		safe_unpack32(&num_tasks, buffer);
+        safe_unpack32(&num_tasks_alloc_algorithm, buffer);
 
 		safe_unpackstr_xmalloc(&acctg_freq, &name_len, buffer);
 		safe_unpack16(&contiguous, buffer);
@@ -2733,6 +2737,7 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 		safe_unpack32(&min_nodes, buffer);
 		safe_unpack32(&max_nodes, buffer);
 		safe_unpack32(&num_tasks, buffer);
+        safe_unpack32(&num_tasks_alloc_algorithm, buffer);
 
 		safe_unpackstr_xmalloc(&acctg_freq, &name_len, buffer);
 		safe_unpack16(&contiguous, buffer);
@@ -2841,6 +2846,7 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 	xfree(job_ptr->details->submit_line);
 	xfree(job_ptr->details->req_nodes);
 	xfree(job_ptr->details->work_dir);
+    xfree(job_ptr->details->tasks_alloc_algorithm);
 
 	/* now put the details into the job record */
 	job_ptr->details->acctg_freq = acctg_freq;
@@ -2889,7 +2895,6 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 		error("unknown detail_use given %d", features_use);
 		break;
 	}
-
 	job_ptr->details->std_in = in;
 	job_ptr->details->pn_min_cpus = pn_min_cpus;
 	job_ptr->details->orig_pn_min_cpus = pn_min_cpus;
@@ -2908,6 +2913,7 @@ static int _load_job_details(job_record_t *job_ptr, buf_t *buffer,
 	job_ptr->details->nice = nice;
 	job_ptr->details->ntasks_per_node = ntasks_per_node;
 	job_ptr->details->num_tasks = num_tasks;
+    job_ptr->details->tasks_alloc_algorithm = num_tasks_alloc_algorithm;
 	job_ptr->details->open_mode = open_mode;
 	job_ptr->details->std_out = out;
 	job_ptr->details->submit_line = submit_line;
@@ -8631,6 +8637,11 @@ static int _copy_job_desc_to_job_record(job_desc_msg_t *job_desc,
 		detail_ptr->overcommit = job_desc->overcommit;
 	if (job_desc->num_tasks != NO_VAL)
 		detail_ptr->num_tasks = job_desc->num_tasks;
+
+    if (job_desc->num_tasks_alloc_algorithm != NO_VAL) {
+        detail_ptr->tasks_alloc_algorithm = job_desc->num_tasks_alloc_algorithm;
+    }
+
 	if (job_desc->ntasks_per_node != NO_VAL16) {
 		detail_ptr->ntasks_per_node = job_desc->ntasks_per_node;
 		if ((detail_ptr->overcommit == 0) &&

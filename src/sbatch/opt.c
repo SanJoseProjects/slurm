@@ -799,6 +799,11 @@ static bool _opt_verify(void)
 		verified = false;
 	}
 
+    if (opt.ntasks_alloc_algorithm < 0 && opt.ntasks_alloc_algorithm != NO_VAL) {
+        error("invalid value of ntasks alloc algorithm ( -n %d )", opt.ntasks_alloc_algorithm);
+        verified = false;
+    }
+
 	/* Check to see if user has specified enough resources to
 	 * satisfy the plane distribution with the specified
 	 * plane_size.
@@ -828,6 +833,12 @@ static bool _opt_verify(void)
 
 	if (opt.cpus_set)
 		 het_job_env.cpus_per_task = opt.cpus_per_task;
+
+    if (opt.ntasks_alloc_algorithm != NO_VAL) {
+        het_job_env.ntasks_alloc_algorithm = opt.ntasks_alloc_algorithm;
+        opt.ntasks_set = true;
+        opt.ntasks = opt.ntasks_alloc_algorithm;
+    }
 
 	set_distribution(opt.distribution, &dist);
 	if (dist) {
@@ -1325,6 +1336,7 @@ extern void init_envs(sbatch_env_t *local_env)
 	local_env->ntasks_per_tres	= NO_VAL;
 	local_env->plane_size		= NO_VAL;
 	local_env->threads_per_core	= NO_VAL16;
+    local_env->ntasks_alloc_algorithm = NO_VAL;
 }
 
 extern void set_envs(char ***array_ptr, sbatch_env_t *local_env,
@@ -1412,4 +1424,11 @@ extern void set_envs(char ***array_ptr, sbatch_env_t *local_env,
 					 local_env->threads_per_core)) {
 		error("Can't set SLURM_THREADS_PER_CORE env variable");
 	}
+
+    if ((local_env->ntasks_alloc_algorithm != NO_VAL) &&
+        !env_array_overwrite_het_fmt(array_ptr, "SLURM_NTASKS_ALLOC_ALGORITHM",
+                                     het_job_offset, "%u",
+                                     local_env->ntasks_alloc_algorithm)) {
+        error("Can't set SLURM_TASKS_ALLOC_ALGORITHM env variable");
+    }
 }
